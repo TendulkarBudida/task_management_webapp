@@ -16,6 +16,9 @@ export default function SignupPage() {
     password: '',
     confirmPassword: ''
   })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
   const { signup, loginWithGoogle } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,10 +27,15 @@ export default function SignupPage() {
       alert('Passwords do not match')
       return
     }
+    setLoading(true)
+    setError('')
     try {
       await signup(formData)
     } catch (error) {
       console.error('Signup failed:', error)
+      setError('Signup failed. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -99,10 +107,11 @@ export default function SignupPage() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
-              Signup
+            {error && <div className="text-red-500 text-center">{error}</div>}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Signing up...' : 'Signup'}
             </Button>
-            <Button type="button" variant="outline" className="w-full" onClick={loginWithGoogle}>
+            <Button type="button" variant="outline" className="w-full" onClick={loginWithGoogle} disabled={loading}>
               Signup with Google
             </Button>
             <div className="text-center text-sm">
@@ -117,5 +126,3 @@ export default function SignupPage() {
     </div>
   )
 }
-
-w

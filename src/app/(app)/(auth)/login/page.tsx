@@ -11,14 +11,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
   const { login, loginWithGoogle } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setLoading(true)
+    setError('')
     try {
       await login(email, password)
     } catch (error) {
       console.error('Login failed:', error)
+      setError('Login failed. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -56,10 +64,11 @@ export default function LoginPage() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            {error && <div className="text-red-500 text-center">{error}</div>}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
             </Button>
-            <Button type="button" variant="outline" className="w-full" onClick={loginWithGoogle}>
+            <Button type="button" variant="outline" className="w-full" onClick={loginWithGoogle} disabled={loading}>
               Login with Google
             </Button>
             <div className="text-center text-sm">

@@ -1,0 +1,1 @@
+// This file is no longer needed as the layout is handled in layout.tsx

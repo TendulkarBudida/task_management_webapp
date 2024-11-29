@@ -1,27 +1,35 @@
 'use client'
 
-import { useAuth } from '@/app/(app)/lib/auth'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/app/(app)/lib/supabaseClient'
+import { User } from '@supabase/supabase-js'
 
 export default function ProtectedLayout({
   children
 }: {
   children: React.ReactNode
 }) {
-  const { user } = useAuth()
-  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
-      router.push('/login')
-    }
-  }, [user, router])
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+      if (!session?.user) {
+        router.push('/login');
+      }
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, [router]);
 
   if (!user) {
-    return null
+    return null;
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }
 
