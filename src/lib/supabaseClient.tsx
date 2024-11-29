@@ -6,7 +6,12 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-export async function syncUserWithPayload(user: any) {
+interface User {
+  email: string;
+  id: string;
+}
+
+export async function syncUserWithPayload(user: User) {
   try {
     const response = await axios.post('/api/sync-user', {
       email: user.email,

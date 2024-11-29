@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { supabase } from '@/app/(app)/lib/supabaseClient'
+import { supabase } from '../../../lib/supabaseClient'
 import { User } from '@supabase/supabase-js'
 
 export default function ProtectedLayout({

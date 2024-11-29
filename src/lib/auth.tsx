@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client"
-/** @jsxImportSource react */
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from './supabaseClient';
+import { NextRequest } from 'next/server'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+import payload from 'payload'
 
 interface LocalUser {
   id: string
@@ -29,6 +33,47 @@ export function useAuth() {
   }
   return context
 }
+
+
+export async function getUser(req: NextRequest) {
+  const supabase = createServerComponentClient({ cookies })
+  
+  const { data: { session } } = await supabase.auth.getSession()
+
+  if (!session) {
+    return null
+  }
+
+  try {
+    const payloadUser = await payload.find({
+      collection: 'users',
+      where: {
+        supabaseId: {
+          equals: session.user.id,
+        },
+      },
+    })
+
+    if (payloadUser.docs.length === 0) {
+      const newUser = await payload.create({
+        collection: 'users',
+        data: {
+          email: session.user.email || '',
+          // @ts-expect-error
+          supabaseId: session.user.id || ''
+        },
+      })
+      return newUser
+    }
+
+    return payloadUser.docs[0]
+  } catch (error) {
+    console.error('Error getting user:', error)
+    return null
+  }
+}
+
+
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<LocalUser | null>(null);
@@ -58,8 +103,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [router]);
 
   const login = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    const { error } = await supabase.auth.signInWithPassword({ email : email, password : password });
+    if (error) {
+      if (error.message === 'Email not confirmed') {
+        // Handle the specific error for unconfirmed email
+        alert('Please confirm your email before logging in.');
+      } else {
+        throw error;
+      }
+    }
   };
 
   const signup = async (data: { email: string; password: string; firstName: string; lastName: string }) => {
@@ -86,10 +138,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   };
 
+  
+
   return (
     <AuthContext.Provider value={{ user, login, signup, logout, loginWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );
+
+  
 }
+
+
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useAuth } from '@/app/(app)/lib/auth'
+import { useAuth } from '../../../../lib/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -31,6 +31,8 @@ export default function SignupPage() {
     setError('')
     try {
       await signup(formData)
+      alert('Signup successful! Please log in.')
+      window.location.href = '/login'
     } catch (error) {
       console.error('Signup failed:', error)
       setError('Signup failed. Please try again.')

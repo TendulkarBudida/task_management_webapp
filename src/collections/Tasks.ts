@@ -53,6 +53,16 @@ const Tasks: CollectionConfig = {
       required: true,
     },
     {
+      name: 'priority',
+      type: 'select',
+      options: [
+        { label: 'Low', value: 'LOW' },
+        { label: 'Medium', value: 'MEDIUM' },
+        { label: 'High', value: 'HIGH' },
+      ],
+      required: true,
+    },
+    {
       name: 'user',
       type: 'relationship',
       relationTo: 'users',

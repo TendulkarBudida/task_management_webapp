@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { supabase, syncUserWithPayload } from "@/lib/supabaseClient"
+import { supabase, syncUserWithPayload } from "../lib/supabaseClient"
 import axios from "axios"
 
 const COLUMNS: TaskStatus[] = ["TODO", "IN PROGRESS", "DONE"]
@@ -97,6 +97,7 @@ export function TaskBoard() {
         title: "New Task",
         description: "New Description",
         status: "TODO",
+        priority: "MEDIUM",
       })
       setTasks([...tasks, response.data])
       setEditTask(response.data)
