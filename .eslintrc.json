@@ -3,5 +3,14 @@
   "rules": {
     "no-console": "off",
     "no-debugger": "off"
-  }
+  },
+  "ignorePatterns": ["*"],
+  "overrides": [
+    {
+      "files": ["*.test.js", "*.spec.js"],
+      "rules": {
+        "no-unused-expressions": "off"
+      }
+    }
+  ]
 }
