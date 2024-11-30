@@ -26,6 +26,9 @@ export function EditTaskModal({ task, open, onClose, onSave }: EditTaskModalProp
         title: '',
         description: '',
         status: 'TODO' as TaskStatus,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        user: ''
       })
     }
   }, [task, open])
