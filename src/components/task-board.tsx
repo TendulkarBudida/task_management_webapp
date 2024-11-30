@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import { useState, useEffect } from "react"
@@ -15,8 +16,7 @@ import {
 import {
   SortableContext,
   arrayMove,
-  verticalListSortingStrategy,
-  SortableItem
+  verticalListSortingStrategy
 } from "@dnd-kit/sortable"
 import { Task, TaskStatus } from "@/types/task"
 import TaskCard from "./task-card"
