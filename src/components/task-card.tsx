@@ -1,63 +1,74 @@
-import { Card } from "@/components/ui/card"
-import { Task } from "@/types/task"
-import { CSS } from "@dnd-kit/utilities"
-import { useSortable } from "@dnd-kit/sortable"
+import React from 'react';
+
+interface Task {
+  id: string;
+  title?: string;
+  description?: string;
+  status?: string;
+  // ... other task properties
+}
 
 interface TaskCardProps {
   task: Task
   onEdit: (task: Task) => void
   onDelete: (id: string) => void
   onView: (task: Task) => void
+  isLoading?: {
+    edit: boolean
+    delete: boolean
+  }
 }
 
-export function TaskCard({ task, onEdit, onDelete, onView }: TaskCardProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: task.id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  }
-
+const TaskCard: React.FC<TaskCardProps> = ({ 
+  task, 
+  onEdit, 
+  onDelete, 
+  onView, 
+  isLoading = { edit: false, delete: false } 
+}) => {
   return (
-    <Card
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className="bg-blue-50 p-4 mb-2 cursor-move"
+    <div 
+      className="border p-4 rounded shadow-md cursor-pointer transform transition-all duration-300 hover:scale-102 animate-fade-in" 
+      onClick={() => onView(task)}
     >
-      <h3 className="font-medium">{task.title}</h3>
-      <p className="text-sm text-gray-600 mt-1">{task.description}</p>
-      <div className="text-xs text-gray-500 mt-2">
-        Created at: {new Date(task.createdAt).toLocaleString()}
+      <div>
+        <p>{task.title || 'Untitled Task'}</p>
+        <p className="text-sm text-gray-600">{task.description || 'No description'}</p>
       </div>
       <div className="flex justify-end gap-2 mt-2">
         <button
-          onClick={() => onDelete(task.id)}
-          className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(task.id);
+          }}
+          disabled={isLoading.delete}
+          className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition-colors disabled:opacity-50"
         >
-          Delete
+          {isLoading.delete ? 'Deleting...' : 'Delete'}
         </button>
         <button
-          onClick={() => onEdit(task)}
-          className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(task);
+          }}
+          disabled={isLoading.edit}
+          className="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors disabled:opacity-50"
         >
-          Edit
+          {isLoading.edit ? 'Editing...' : 'Edit'}
         </button>
         <button
-          onClick={() => onView(task)}
-          className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+          onClick={(e) => {
+            e.stopPropagation();
+            onView(task);
+          }}
+          className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
         >
-          View Details
+          View
         </button>
       </div>
-    </Card>
-  )
-}
+    </div>
+  );
+};
+
+export default TaskCard;
 

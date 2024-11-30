@@ -2,6 +2,8 @@
 /** @jsxImportSource react */
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 import { useRouter } from 'next/navigation'
 import { supabase } from './supabaseClient';
 
@@ -29,6 +31,7 @@ export function useAuth() {
   }
   return context
 }
+
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<LocalUser | null>(null);
@@ -60,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+
   };
 
   const signup = async (data: { email: string; password: string; firstName: string; lastName: string }) => {

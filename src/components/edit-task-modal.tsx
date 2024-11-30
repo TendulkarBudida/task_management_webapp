@@ -1,15 +1,10 @@
+import { useState, useEffect } from 'react'
+import { Task, TaskStatus } from '@/types/task'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Task } from "@/types/task"
-import { useState, useEffect } from "react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface EditTaskModalProps {
   task: Task | null
@@ -19,57 +14,82 @@ interface EditTaskModalProps {
 }
 
 export function EditTaskModal({ task, open, onClose, onSave }: EditTaskModalProps) {
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
+  const [editedTask, setEditedTask] = useState<Task | null>(null)
 
   useEffect(() => {
     if (task) {
-      setTitle(task.title)
-      setDescription(task.description)
+      setEditedTask({ ...task })
+    } else if (open) {
+      // Initialize empty task when opening new task modal
+      setEditedTask({
+        id: '',
+        title: '',
+        description: '',
+        status: 'TODO' as TaskStatus,
+      })
     }
-  }, [task])
+  }, [task, open])
 
   const handleSave = () => {
-    if (task) {
-      onSave({
-        ...task,
-        title,
-        description,
-      })
+    if (editedTask) {
+      onSave(editedTask)
       onClose()
     }
   }
 
+  if (!editedTask) return null
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Task</DialogTitle>
+          <DialogTitle>{task ? 'Edit Task' : 'New Task'}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="title" className="text-right">
+              Title
+            </label>
             <Input
               id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={editedTask.title}
+              onChange={(e) => setEditedTask({ ...editedTask, title: e.target.value })}
+              className="col-span-3"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="description" className="text-right">
+              Description
+            </label>
             <Textarea
               id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={editedTask.description}
+              onChange={(e) => setEditedTask({ ...editedTask, description: e.target.value })}
+              className="col-span-3"
             />
           </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave}>Save</Button>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="status" className="text-right">
+              Status
+            </label>
+            <Select
+              value={editedTask.status}
+              onValueChange={(value: TaskStatus) => setEditedTask({ ...editedTask, status: value })}
+            >
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select a status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="TODO">To Do</SelectItem>
+                <SelectItem value="IN PROGRESS">In Progress</SelectItem>
+                <SelectItem value="DONE">Done</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
+        <DialogFooter>
+          <Button type="submit" onClick={handleSave}>Save changes</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

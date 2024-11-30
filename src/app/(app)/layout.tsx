@@ -2,7 +2,7 @@
 
 import "./globals.css";
 import ProtectedLayout from "./(protected)/layout";
-import { AuthProvider, useAuth } from './lib/auth';
+import { AuthProvider, useAuth } from '../../lib/auth';
 import LoginPage from './(auth)/login/page';
 import SignupPage from './(auth)/signup/page';
 import { usePathname } from 'next/navigation';
